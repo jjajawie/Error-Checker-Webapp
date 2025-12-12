@@ -1,38 +1,56 @@
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.App.light {
+  background-color: #f5f7fb;
+  color: #333333;
+}
+
+.App.dark {
+  background-color: #0d1117;
+  color: #ffffff;
+}
+
+.app-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.components-demo {
+  margin-top: 40px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 32px;
 }
 
-.App-link {
-  color: #61dafb;
+.demo-section {
+  background: var(--section-bg);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.light .demo-section {
+  --section-bg: #ffffff;
+}
+
+.dark .demo-section {
+  --section-bg: #161b22;
+}
+
+.demo-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--heading-color);
+}
+
+.light .demo-section h3 {
+  --heading-color: #212529;
+}
+
+.dark .demo-section h3 {
+  --heading-color: #ffffff;
 }
