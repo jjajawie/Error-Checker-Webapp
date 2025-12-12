@@ -1,24 +1,19 @@
 // src/components/dashboard.js
-import React, { useState, useMemo } from "react";
-import SearchFilter from "./searchFilter";
-import ErrorCard from "./errorCard";
-import "./dashBoard.css";
+import React, { useState, useMemo } from 'react';
+import SearchFilter from './searchFilter';
+import ErrorCard from './errorCard';
+import './dashBoard.css';
 
-function Dashboard({
-  errors,
-  onErrorSelect,
-  selectedErrors,
-  onErrorDetails, // 
-}) {
-  const [searchTerm, setSearchTerm] = useState("");
+function Dashboard({ errors, onErrorDetails }) {
+  const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
-    severity: "",
-    status: "",
-    environment: "",
+    severity: '',
+    status: '',
+    environment: ''
   });
 
   const handleSearch = (term) => {
-    setSearchTerm(term);
+    setSearchTerm(term || '');
   };
 
   const handleFilterChange = (newFilters) => {
@@ -27,84 +22,60 @@ function Dashboard({
 
   const filteredErrors = useMemo(() => {
     return errors.filter((err) => {
-      if (searchTerm) {
-        const haystack = `${err.title ?? ""} ${err.message ?? ""}`.toLowerCase();
-        if (!haystack.includes(searchTerm.toLowerCase())) {
-          return false;
-        }
-      }
+      const text = (err.title + ' ' + err.message).toLowerCase();
+      const matchesSearch =
+        !searchTerm || text.includes(searchTerm.toLowerCase());
 
-      if (filters.severity && err.severity !== filters.severity) {
-        return false;
-      }
+      const matchesSeverity =
+        !filters.severity || err.severity === filters.severity;
 
-      if (filters.status && err.status !== filters.status) {
-        return false;
-      }
+      const matchesStatus =
+        !filters.status || err.status === filters.status;
 
-      if (filters.environment && err.environment !== filters.environment) {
-        return false;
-      }
+      const matchesEnv =
+        !filters.environment || err.environment === filters.environment;
 
-      return true;
+      return matchesSearch && matchesSeverity && matchesStatus && matchesEnv;
     });
   }, [errors, searchTerm, filters]);
 
-  const sampleError = errors[0];
-
   return (
-    <div className="dashboard">
+    <div className="dashboard-page">
       <h2 className="dashboard-title">Error Tracking Dashboard</h2>
 
-      {/* Search / Filter card */}
-      <section className="dashboard-section">
-        <h3 className="section-heading">Search &amp; Filter Component</h3>
+      <section className="demo-section">
+        <h3>Search &amp; Filter Component</h3>
         <SearchFilter
           onSearch={handleSearch}
           onFilterChange={handleFilterChange}
+          initialFilters={filters}
         />
       </section>
 
-      {/* Filtered error list */}
-      <section className="dashboard-section">
-        <h3 className="section-heading">Error List Component</h3>
+      <section className="demo-section">
+        <h3>Error List Component</h3>
+        <p className="error-count">
+          Showing {filteredErrors.length} of {errors.length} errors
+        </p>
 
-        {filteredErrors.length === 0 ? (
-          <p>No errors match the current filters.</p>
-        ) : (
-          filteredErrors.map((err) => (
+        <div className="errors-container">
+          {filteredErrors.map((error) => (
             <ErrorCard
-              key={err.id}
-              error={err}
-              onSelect={onErrorSelect}
-              isSelected={selectedErrors?.has(err.id)}
-              onDetails={onErrorDetails}   // <-- uses the prop
+              key={error.id}
+              error={error}
+              onDetails={onErrorDetails}
             />
-          ))
-        )}
-      </section>
+          ))}
 
-      {/* Single ErrorCard demo */}
-      {sampleError && (
-        <section className="dashboard-section">
-          <h3 className="section-heading">Error Card Component</h3>
-          <ErrorCard
-            error={sampleError}
-            onSelect={onErrorSelect}
-            isSelected={selectedErrors?.has(sampleError.id)}
-            onDetails={onErrorDetails}
-          />
-        </section>
-      )}
+          {filteredErrors.length === 0 && (
+            <p className="empty-state">
+              No errors match the current search / filters.
+            </p>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
-
-Dashboard.defaultProps = {
-  errors: [],
-  onErrorSelect: () => {},
-  selectedErrors: new Set(),
-  onErrorDetails: () => {},
-};
 
 export default Dashboard;

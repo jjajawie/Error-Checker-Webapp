@@ -1,61 +1,53 @@
-import React, { useState, useMemo } from "react";
-import ErrorCard from "./errorCard";
-import "./errorList.css";
+// src/components/errorList.js
+import React, { useState, useMemo } from 'react';
+import './errorList.css';
+import ErrorCard from './errorCard';
 
-function ErrorList({ errors = [], onErrorSelect, selectedErrors, onErrorDetails }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [severityFilter, setSeverityFilter] = useState("");
+function ErrorList({ errors, onErrorDetails }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [severity, setSeverity] = useState('');
 
   const filteredErrors = useMemo(() => {
-    return errors.filter((error) => {
-      if (searchTerm) {
-        const haystack = `${error.title ?? ""} ${error.message ?? ""}`.toLowerCase();
-        if (!haystack.includes(searchTerm.toLowerCase())) {
-          return false;
-        }
-      }
-      if (severityFilter && error.severity !== severityFilter) {
-        return false;
-      }
-      return true;
+    return errors.filter((err) => {
+      const text = (err.title + ' ' + err.message).toLowerCase();
+      const matchesSearch =
+        !searchTerm || text.includes(searchTerm.toLowerCase());
+      const matchesSeverity = !severity || err.severity === severity;
+      return matchesSearch && matchesSeverity;
     });
-  }, [errors, searchTerm, severityFilter]);
+  }, [errors, searchTerm, severity]);
 
   return (
     <div className="error-list-container">
       <div className="error-list-header">
-        <h2 className="error-list-title">Error Tracking</h2>
+        <h2 className="error-list-title">All Errors</h2>
       </div>
 
-      {/* Search box */}
+      {/* search bar */}
       <div className="search-container">
         <div className="search-box">
           <input
+            className="search-input"
             type="text"
             placeholder="Search errors..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
           />
-          <button
-            type="button"
-            className="search-btn"
-            onClick={() => {}}
-          >
+          <button className="search-btn" type="button">
             Search
           </button>
         </div>
       </div>
 
-      {/* Simple severity filter */}
+      {/* simple severity filter */}
       <div className="filters-container">
         <div className="filters-grid">
           <div className="filter-group">
             <label>Severity</label>
             <select
+              value={severity}
+              onChange={(e) => setSeverity(e.target.value)}
               className="filter-select"
-              value={severityFilter}
-              onChange={(e) => setSeverityFilter(e.target.value)}
             >
               <option value="">All Severities</option>
               <option value="critical">Critical</option>
@@ -67,23 +59,24 @@ function ErrorList({ errors = [], onErrorSelect, selectedErrors, onErrorDetails 
         </div>
       </div>
 
-      {/* Error cards */}
+      <div className="error-count">
+        Showing {filteredErrors.length} of {errors.length} errors
+      </div>
+
       <div className="errors-grid">
-        {filteredErrors.length === 0 ? (
+        {filteredErrors.map((error) => (
+          <ErrorCard
+            key={error.id}
+            error={error}
+            onDetails={onErrorDetails}
+          />
+        ))}
+
+        {filteredErrors.length === 0 && (
           <div className="empty-state">
             <h3>No errors found</h3>
-            <p>Try changing your search or filters.</p>
+            <p>Try relaxing your filters or search term.</p>
           </div>
-        ) : (
-          filteredErrors.map((error) => (
-            <ErrorCard
-              key={error.id}
-              error={error}
-              onSelect={onErrorSelect}
-              isSelected={selectedErrors?.has(error.id)}
-              onDetails={onErrorDetails}
-            />
-          ))
         )}
       </div>
     </div>
