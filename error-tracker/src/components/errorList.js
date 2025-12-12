@@ -1,69 +1,90 @@
-import React, { useState } from 'react';
-import ErrorCard from './errorCard';
-import SearchFilter from './searchFilter';
+import React, { useState, useMemo } from "react";
+import ErrorCard from "./errorCard";
+import "./errorList.css";
 
-function ErrorList() {
-  const [errors, setErrors] = useState([
-    {
-      id: 1,
-      title: 'TypeError: Cannot read property',
-      message: 'Cannot read property "map" of undefined',
-      severity: 'critical',
-      status: 'open',
-      occurrences: 15,
-      project: 'Dashboard App'
-    },
-    // Add more mock errors
-  ]);
+function ErrorList({ errors = [], onErrorSelect, selectedErrors, onErrorDetails }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [severityFilter, setSeverityFilter] = useState("");
 
-  const [filteredErrors, setFilteredErrors] = useState(errors);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-    const filtered = errors.filter(error =>
-      error.title.toLowerCase().includes(term.toLowerCase()) ||
-      error.message.toLowerCase().includes(term.toLowerCase())
-    );
-    setFilteredErrors(filtered);
-  };
-
-  const handleFilter = (severity, status) => {
-    // Filter logic here
-  };
+  const filteredErrors = useMemo(() => {
+    return errors.filter((error) => {
+      if (searchTerm) {
+        const haystack = `${error.title ?? ""} ${error.message ?? ""}`.toLowerCase();
+        if (!haystack.includes(searchTerm.toLowerCase())) {
+          return false;
+        }
+      }
+      if (severityFilter && error.severity !== severityFilter) {
+        return false;
+      }
+      return true;
+    });
+  }, [errors, searchTerm, severityFilter]);
 
   return (
-    <div className="error-list">
-      <h2>Error Tracking</h2>
-      
-      {/* Search and Filter Bar */}
-      <div className="search-filter-bar">
-        <input
-          type="text"
-          placeholder="Search errors..."
-          value={searchTerm}
-          onChange={(e) => handleSearch(e.target.value)}
-          className="search-input"
-        />
-        <select className="severity-filter">
-          <option value="">All Severities</option>
-          <option value="critical">Critical</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
+    <div className="error-list-container">
+      <div className="error-list-header">
+        <h2 className="error-list-title">Error Tracking</h2>
       </div>
 
-      {/* Error Count */}
-      <div className="error-count">
-        Showing {filteredErrors.length} of {errors.length} errors
+      {/* Search box */}
+      <div className="search-container">
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="Search errors..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <button
+            type="button"
+            className="search-btn"
+            onClick={() => {}}
+          >
+            Search
+          </button>
+        </div>
       </div>
 
-      {/* Error Cards */}
-      <div className="errors-container">
-        {filteredErrors.map(error => (
-          <ErrorCard key={error.id} error={error} />
-        ))}
+      {/* Simple severity filter */}
+      <div className="filters-container">
+        <div className="filters-grid">
+          <div className="filter-group">
+            <label>Severity</label>
+            <select
+              className="filter-select"
+              value={severityFilter}
+              onChange={(e) => setSeverityFilter(e.target.value)}
+            >
+              <option value="">All Severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Error cards */}
+      <div className="errors-grid">
+        {filteredErrors.length === 0 ? (
+          <div className="empty-state">
+            <h3>No errors found</h3>
+            <p>Try changing your search or filters.</p>
+          </div>
+        ) : (
+          filteredErrors.map((error) => (
+            <ErrorCard
+              key={error.id}
+              error={error}
+              onSelect={onErrorSelect}
+              isSelected={selectedErrors?.has(error.id)}
+              onDetails={onErrorDetails}
+            />
+          ))
+        )}
       </div>
     </div>
   );

@@ -9,8 +9,8 @@
 }
 
 .App.dark {
-  background-color: #0d1117;
-  color: #ffffff;
+  background-color: #111827;
+  color: #e5e7eb;
 }
 
 .app-main {
@@ -38,7 +38,7 @@
 }
 
 .dark .demo-section {
-  --section-bg: #161b22;
+  --section-bg: #ffffff;
 }
 
 .demo-section h3 {
@@ -52,5 +52,5 @@
 }
 
 .dark .demo-section h3 {
-  --heading-color: #ffffff;
+  --heading-color: #111827;
 }

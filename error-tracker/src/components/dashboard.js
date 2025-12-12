@@ -1,110 +1,110 @@
-// src/components/Dashboard.js
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
-import './dashBoard.css';
+// src/components/dashboard.js
+import React, { useState, useMemo } from "react";
+import SearchFilter from "./searchFilter";
+import ErrorCard from "./errorCard";
+import "./dashBoard.css";
 
-const Dashboard = () => {
-    const [errors, setErrors] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [filters, setFilters] = useState({
-        severity: '',
-        status: ''
+function Dashboard({
+  errors,
+  onErrorSelect,
+  selectedErrors,
+  onErrorDetails, // 
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState({
+    severity: "",
+    status: "",
+    environment: "",
+  });
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const filteredErrors = useMemo(() => {
+    return errors.filter((err) => {
+      if (searchTerm) {
+        const haystack = `${err.title ?? ""} ${err.message ?? ""}`.toLowerCase();
+        if (!haystack.includes(searchTerm.toLowerCase())) {
+          return false;
+        }
+      }
+
+      if (filters.severity && err.severity !== filters.severity) {
+        return false;
+      }
+
+      if (filters.status && err.status !== filters.status) {
+        return false;
+      }
+
+      if (filters.environment && err.environment !== filters.environment) {
+        return false;
+      }
+
+      return true;
     });
+  }, [errors, searchTerm, filters]);
 
-    useEffect(() => {
-        const fetchErrors = async () => {
-            try {
-                const response = await axios.get('http://localhost:5000/api/errors', {
-                    params: {
-                        severity: filters.severity,
-                        status: filters.status,
-                    }
-                });
-                setErrors(response.data);
-                setLoading(false);
-            } catch (error) {
-                setErrorMessage('Failed to load errors');
-                setLoading(false);
-            }
-        };
+  const sampleError = errors[0];
 
-        fetchErrors();
-    }, [filters]);
+  return (
+    <div className="dashboard">
+      <h2 className="dashboard-title">Error Tracking Dashboard</h2>
 
-    const handleFilterChange = (e) => {
-        setFilters({
-            ...filters,
-            [e.target.name]: e.target.value,
-        });
-    };
+      {/* Search / Filter card */}
+      <section className="dashboard-section">
+        <h3 className="section-heading">Search &amp; Filter Component</h3>
+        <SearchFilter
+          onSearch={handleSearch}
+          onFilterChange={handleFilterChange}
+        />
+      </section>
 
-    return (
-        <div className="dashboard">
-            <h1>Error Dashboard</h1>
+      {/* Filtered error list */}
+      <section className="dashboard-section">
+        <h3 className="section-heading">Error List Component</h3>
 
-            {/* Filters Section */}
-            <div className="filters">
-                <select
-                    name="severity"
-                    value={filters.severity}
-                    onChange={handleFilterChange}
-                    className="filter-dropdown"
-                >
-                    <option value="">All Severities</option>
-                    <option value="critical">Critical</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                </select>
+        {filteredErrors.length === 0 ? (
+          <p>No errors match the current filters.</p>
+        ) : (
+          filteredErrors.map((err) => (
+            <ErrorCard
+              key={err.id}
+              error={err}
+              onSelect={onErrorSelect}
+              isSelected={selectedErrors?.has(err.id)}
+              onDetails={onErrorDetails}   // <-- uses the prop
+            />
+          ))
+        )}
+      </section>
 
-                <select
-                    name="status"
-                    value={filters.status}
-                    onChange={handleFilterChange}
-                    className="filter-dropdown"
-                >
-                    <option value="">All Statuses</option>
-                    <option value="open">Open</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="resolved">Resolved</option>
-                </select>
-            </div>
+      {/* Single ErrorCard demo */}
+      {sampleError && (
+        <section className="dashboard-section">
+          <h3 className="section-heading">Error Card Component</h3>
+          <ErrorCard
+            error={sampleError}
+            onSelect={onErrorSelect}
+            isSelected={selectedErrors?.has(sampleError.id)}
+            onDetails={onErrorDetails}
+          />
+        </section>
+      )}
+    </div>
+  );
+}
 
-            {/* Display Errors in a Table */}
-            {loading ? (
-                <p>Loading...</p>
-            ) : errorMessage ? (
-                <p>{errorMessage}</p>
-            ) : (
-                <table className="error-table">
-                    <thead>
-                        <tr>
-                            <th>Error ID</th>
-                            <th>Message</th>
-                            <th>Severity</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {errors.map((error) => (
-                            <tr key={error.id}>
-                                <td>{error.id}</td>
-                                <td>{error.message}</td>
-                                <td>{error.severity}</td>
-                                <td>{error.status}</td>
-                                <td>
-                                    <Link to={`/errors/${error.id}`} className="view-link">View Details</Link>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
-        </div>
-    );
+Dashboard.defaultProps = {
+  errors: [],
+  onErrorSelect: () => {},
+  selectedErrors: new Set(),
+  onErrorDetails: () => {},
 };
 
 export default Dashboard;

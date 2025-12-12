@@ -1,90 +1,85 @@
-import React, { useState } from 'react';
-import Dashboard from './components/dashboard';
-import ErrorDetail from './components/errorDetail';
-import ErrorList from './components/errorList';
-import Navbar from './components/navbar';
-import SearchFilter from './components/searchFilter';
-import ErrorCard from './components/errorCard';
-import './App.css';
+// src/App.js
+import React, { useState } from "react";
+import Dashboard from "./components/dashboard";
+import ErrorDetail from "./components/errorDetail";
+import ErrorList from "./components/errorList";
+import Navbar from "./components/navbar";
+import "./App.css";
 
 function App() {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState("light");
   const [selectedErrors, setSelectedErrors] = useState(new Set());
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [selectedError, setSelectedError] = useState(null);
 
-  // Mock data
   const errors = [
     {
       id: 1,
-      title: 'TypeError: Cannot read property',
-      message: 'Cannot read property "map" of undefined in UserList component',
-      severity: 'critical',
-      status: 'open',
-      timestamp: '2024-01-15T10:30:00Z',
+      title: "TypeError: Cannot read property",
+      message:
+        'Cannot read property "map" of undefined in UserList component',
+      severity: "critical",
+      status: "open",
+      timestamp: "2024-01-15T10:30:00Z",
       occurrences: 15,
-      project: 'Dashboard App',
-      environment: 'production',
-      user: 'john@example.com',
-      tags: ['frontend', 'react', 'javascript']
+      project: "Dashboard App",
+      environment: "production",
+      user: "john@example.com",
+      tags: ["frontend", "react", "javascript"],
+      stackTrace:
+        "TypeError: Cannot read property 'map' of undefined\n    at UserList.jsx:42:15\n    at renderWithHooks (react-dom.development.js:16305:18)...",
     },
-    // Add more errors...
+    // add more mock errors here if you like
   ];
 
   const handleToggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
-  };
-
-  const handleSearch = (searchTerm) => {
-    console.log('Searching for:', searchTerm);
-  };
-
-  const handleFilterChange = (filters) => {
-    console.log('Filters changed:', filters);
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   const handleErrorSelect = (errorId) => {
-    const newSelected = new Set(selectedErrors);
-    if (newSelected.has(errorId)) {
-      newSelected.delete(errorId);
-    } else {
-      newSelected.add(errorId);
-    }
-    setSelectedErrors(newSelected);
+    setSelectedErrors((prev) => {
+      const next = new Set(prev);
+      if (next.has(errorId)) next.delete(errorId);
+      else next.add(errorId);
+      return next;
+    });
+  };
+
+  const handleViewDetails = (error) => {
+    setSelectedError(error);
   };
 
   return (
     <div className={`App ${theme}`}>
-      <Navbar 
-        onSearch={handleSearch}
-        onToggleTheme={handleToggleTheme}
+      <Navbar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
         theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
-      
+
       <main className="app-main">
-        <ErrorList errors={errors} />
-        
-        <div className="components-demo">
-          <section className="demo-section">
-            <h3>Search & Filter Component</h3>
-            <SearchFilter 
-              onSearch={handleSearch}
-              onFilterChange={handleFilterChange}
-              projects={[{ id: 1, name: 'Dashboard App' }, { id: 2, name: 'API Service' }]}
-              users={[{ id: 1, name: 'John Developer' }, { id: 2, name: 'Jane Tester' }]}
+        {activeTab === "dashboard" ? (
+          <>
+            <Dashboard
+              errors={errors}
+              onErrorSelect={handleErrorSelect}
+              selectedErrors={selectedErrors}
+              onErrorDetails={handleViewDetails}
             />
-          </section>
-          
-          <section className="demo-section">
-            <h3>Error Card Component</h3>
-            {errors.slice(0, 2).map(error => (
-              <ErrorCard 
-                key={error.id}
-                error={error}
-                onSelect={handleErrorSelect}
-                isSelected={selectedErrors.has(error.id)}
-              />
-            ))}
-          </section>
-        </div>
+            <ErrorDetail error={selectedError} />
+          </>
+        ) : (
+          <>
+            <ErrorList
+              errors={errors}
+              onErrorSelect={handleErrorSelect}
+              selectedErrors={selectedErrors}
+              onErrorDetails={handleViewDetails}
+            />
+            <ErrorDetail error={selectedError} />
+          </>
+        )}
       </main>
     </div>
   );

@@ -1,8 +1,8 @@
 import React from 'react';
 import './errorCard.css';
 
-function ErrorCard({ error, onSelect, isSelected }) {
-  // Determine severity styling
+function ErrorCard({ error, onSelect, isSelected, onDetails }) {
+  // severity styling
   const getSeverityStyles = () => {
     switch (error.severity) {
       case 'critical': return { color: '#df1b2eff', bgColor: '#f1cacdff' };
@@ -13,7 +13,7 @@ function ErrorCard({ error, onSelect, isSelected }) {
     }
   };
 
-  // Determine status styling
+  // status styling
   const getStatusStyles = () => {
     switch (error.status) {
       case 'open': return { color: '#dc3545', text: 'Open' };
@@ -36,10 +36,14 @@ function ErrorCard({ error, onSelect, isSelected }) {
     }
   };
 
-  // Handle view details
+  // Handles view details
   const handleViewDetails = (e) => {
     e.stopPropagation();
-    console.log('Viewing details for error:', error.id);
+    if (onDetails) {
+      onDetails(error);
+    } else {
+      console.log('Viewing details for error:', error.id);
+    }
   };
 
   return (
@@ -64,10 +68,10 @@ function ErrorCard({ error, onSelect, isSelected }) {
         <div className="header-left">
           <h4 className="error-title">{error.title || 'Untitled Error'}</h4>
           <div className="badge-container">
-            <span className="severity-badge">
+            <span className="severity-badge" style={{ backgroundColor: severityStyle.bgColor, color: severityStyle.color }}>
               {error.severity ? error.severity.toUpperCase() : 'UNKNOWN'}
             </span>
-            <span className="status-badge">
+            <span className="status-badge" data-status={error.status} style={{ backgroundColor: statusStyle.color }}>
               {statusStyle.text}
             </span>
           </div>
@@ -158,7 +162,8 @@ ErrorCard.defaultProps = {
     tags: []
   },
   onSelect: null,
-  isSelected: false
+  isSelected: false,
+  onDetails: null
 };
 
 export default ErrorCard;
