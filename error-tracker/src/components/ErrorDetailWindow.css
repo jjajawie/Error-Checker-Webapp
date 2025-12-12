@@ -1,0 +1,59 @@
+/* 1. Backdrop (Full screen, dimming the background) */
+.modal-backdrop {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top of everything */
+}
+
+/* 2. The Modal Window Content */
+.modal-content-window {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 25px;
+    max-width: 90%;
+    width: 800px; /* Set a fixed max width for the window */
+    max-height: 90vh;
+    overflow-y: auto; /* Allows scrolling inside the modal if content is long */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    position: relative;
+    /* You can add a subtle animation like transform: scale(0.95) to transform: scale(1) for a nice effect */
+}
+
+/* Dark Mode Integration */
+.App.dark .modal-content-window {
+    background-color: #1f2937;
+    color: #e5e7eb;
+}
+
+/* 3. Modal Header/Close Button */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.App.dark .modal-header {
+    border-bottom-color: #374151;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    color: #333;
+}
+.App.dark .modal-close-btn {
+    color: #e5e7eb;
+}
