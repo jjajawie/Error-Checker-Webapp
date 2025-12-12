@@ -1,4 +1,4 @@
-// src/components/navbar.js  (make sure the file name matches this path)
+// src/components/navbar.js 
 import React from "react";
 import "./navbar.css";
 

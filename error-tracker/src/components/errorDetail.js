@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import './errorDetail.css';  // Add custom styles for the error detail page
+import './errorDetail.css';  
 
 const ErrorDetail = () => {
-    const { id } = useParams(); // Get error ID from the URL
+    const { id } = useParams();
     const [errorDetail, setErrorDetail] = useState(null);
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
