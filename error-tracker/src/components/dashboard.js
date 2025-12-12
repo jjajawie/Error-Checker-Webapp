@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './dashBoard.css';  // Updated the CSS file for custom styling
+import './dashBoard.css';
 
 const Dashboard = () => {
     const [errors, setErrors] = useState([]);
