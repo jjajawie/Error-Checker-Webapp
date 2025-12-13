@@ -1,4 +1,4 @@
-/* 1. Backdrop (Full screen, dimming the background) */
+/* Dims the background) */
 .modal-backdrop {
     position: fixed; 
     top: 0;
@@ -12,7 +12,6 @@
     z-index: 1000; /* Ensure it's on top of everything */
 }
 
-/* 2. The Modal Window Content */
 .modal-content-window {
     background: #ffffff;
     border-radius: 8px;
@@ -23,7 +22,6 @@
     overflow-y: auto; /* Allows scrolling inside the modal if content is long */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     position: relative;
-    /* You can add a subtle animation like transform: scale(0.95) to transform: scale(1) for a nice effect */
 }
 
 /* Dark Mode Integration */
@@ -32,7 +30,6 @@
     color: #e5e7eb;
 }
 
-/* 3. Modal Header/Close Button */
 .modal-header {
     display: flex;
     justify-content: space-between;

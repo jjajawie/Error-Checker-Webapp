@@ -1,7 +1,6 @@
 import React from 'react';
 import './ErrorDetailWindow.css';
 
-// Assuming you have an ErrorDetail component that shows the info
 import ErrorDetail from './errorDetail'; 
 
 function ErrorDetailWindow({ error, onClose }) {
@@ -16,8 +15,6 @@ function ErrorDetailWindow({ error, onClose }) {
     return (
         // The modal-backdrop covers the whole screen and closes the modal when clicked
         <div className="modal-backdrop" onClick={onClose}>
-            
-            {/* The actual window/dialog box */}
             <div className="modal-content-window" onClick={handleContentClick}>
                 
                 <div className="modal-header">
@@ -28,7 +25,6 @@ function ErrorDetailWindow({ error, onClose }) {
                 </div>
 
                 <div className="modal-body">
-                    {/* Display the error details using your existing component */}
                     <ErrorDetail error={error} />
                 </div>
             </div>
