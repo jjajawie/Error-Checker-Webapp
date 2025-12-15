@@ -1,0 +1,56 @@
+.App {
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.App.light {
+  background-color: #f5f7fb;
+  color: #333333;
+}
+
+.App.dark {
+  background-color: #111827;
+  color: #e5e7eb;
+}
+
+.app-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.components-demo {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.demo-section {
+  background: var(--section-bg);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.light .demo-section {
+  --section-bg: #ffffff;
+}
+
+.dark .demo-section {
+  --section-bg: #ffffff;
+}
+
+.demo-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--heading-color);
+}
+
+.light .demo-section h3 {
+  --heading-color: #212529;
+}
+
+.dark .demo-section h3 {
+  --heading-color: #111827;
+}
