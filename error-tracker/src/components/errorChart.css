@@ -1,0 +1,17 @@
+/* src/components/errorChart.css */
+.error-chart {
+    margin: 20px auto;
+    padding: 10px;
+    max-width: 600px;
+    background-color: #f9d9d9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.error-chart h3 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 600;
+}
