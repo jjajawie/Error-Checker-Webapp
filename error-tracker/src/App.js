@@ -1,5 +1,6 @@
 // src/App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Navbar from './components/navbar';
 import Dashboard from './components/dashboard';
 import ErrorList from './components/errorList';
@@ -9,68 +10,50 @@ import './App.css';
 
 function App() {
   const [theme, setTheme] = useState('light');
-  const [activeTab, setActiveTab] = useState('dashboard'); 
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedError, setSelectedError] = useState(null);
 
-  // Mock data – “fake backend” for now
-  const [errors] = useState([
-    {
-      id: 1,
-      title: 'TypeError: Cannot read property',
-      message: 'Cannot read property "map" of undefined in UserList component',
-      severity: 'critical',
-      status: 'open',
-      timestamp: '2024-01-15T10:30:00Z',
-      occurrences: 15,
-      project: 'Dashboard App',
-      environment: 'production',
-      user: 'john@example.com',
-      tags: ['frontend', 'react', 'javascript'],
-      stackTrace:
-        "TypeError: Cannot read property 'map' of undefined\n" +
-        '    at UserList.jsx:42:15\n' +
-        '    at renderWithHooks (react-dom.development.js:16305:18)'
-    },
+  // State for holding real database data
+  const [errors, setErrors] = useState([]); 
 
-   {
-      id: 2,
-      title: 'ReferenceError: $ is not defined',
-      message: 'Query $ variable is not defined on page load in initAnalytics script',
-      severity: 'high',
-      status: 'open',
-      timestamp: '2024-01-15T11:45:00Z',
-      occurrences: 58,
-      project: 'Marketing Site',
-      environment: 'staging',
-      user: 'anon-session-12345',
-      tags: ['frontend', 'javascript', 'jquery', 'third-party'],
-      stackTrace:
-        "ReferenceError: $ is not defined\n" +
-        '    at initAnalytics (analytics.js:10:5)\n' +
-        '    at HTMLDocument.ready (main.js:30:3)\n' +
-        '    at fire (jquery.js:3232:38)'
-    },
-    {
-      id: 3,
-      title: 'Warning: Missing alt prop on <img> tag',
-      message: 'Accessibility warning: Image in ProductCard component is missing an "alt" attribute',
-      severity: 'low',
-      status: 'new',
-      timestamp: '2024-01-15T13:10:00Z',
-      occurrences: 302,
-      project: 'E-commerce Platform',
-      environment: 'development',
-      user: 'dev-session-456',
-      tags: ['frontend', 'react', 'accessibility', 'warning'],
-      stackTrace:
-        "Warning: Missing alt prop on <img> tag\n" +
-        '    at img\n' +
-        '    at ProductCard.jsx:88:9\n' +
-        '    at div\n' +
-        '    at ProductList.js:15:1'
-    },
-    // add more mock errors here later
-  ]);
+  // States for handling the loading experience
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null); 
+    
+  // Effect Hook to fetch data when the component first mounts
+  useEffect(() => {
+    const fetchErrors = async () => {
+      setIsLoading(true);
+      setFetchError(null); 
+
+      try {
+        const response = await axios.get('/api/errors'); 
+        const data = response.data;
+        const formattedData = data.map(item => ({
+          ...item,
+          id: Number(item.id), 
+          occurrences: Number(item.occurrences), 
+        }));
+
+        setErrors(formattedData);
+        
+      } catch (error) {
+        console.error("Could not fetch errors:", error);
+        // Check if the error is due to the server being offline/unreachable
+        const errorMessage = error.message.includes('5000') || error.message.includes('Network Error')
+          ? "Failed to connect to API. Is the Node.js server running on port 5000?"
+          : `Error fetching data: ${error.message}`;
+
+        setFetchError(errorMessage);
+        
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchErrors();
+  }, []);
+
 
   const handleToggleTheme = () => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
@@ -94,21 +77,27 @@ function App() {
       />
 
       <main className="app-main">
-        {activeTab === 'dashboard' && (
+        
+        {isLoading && <div className="app-message">Loading errors from the database...</div>}
+        
+        {fetchError && (
+          <div className="app-error-message">
+            <h2>Data Loading Failed</h2>
+            <p>{fetchError}</p>
+          </div>
+        )}
+        {!isLoading && !fetchError && activeTab === 'dashboard' && (
           <Dashboard errors={errors} onErrorDetails={handleErrorDetails} />
         )}
-
-        {activeTab === 'errors' && (
+        {!isLoading && !fetchError && activeTab === 'errors' && (
           <ErrorList errors={errors} onErrorDetails={handleErrorDetails} />
         )}
-
-        {/* Shared detail panel under both tabs */}
         <ErrorDetail error={selectedError} />
       </main>
 
       <ErrorDetailWindow
-            error={selectedError} 
-            onClose={() => setSelectedError(null)} 
+        error={selectedError} 
+        onClose={() => setSelectedError(null)} 
       />
     </div>
   );
