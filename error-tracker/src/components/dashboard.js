@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import SearchFilter from './searchFilter';
 import ErrorCard from './errorCard';
+import ErrorChart from './errorChart';
 import './dashBoard.css';
 
 function Dashboard({ errors, onErrorDetails }) {
@@ -42,6 +43,13 @@ function Dashboard({ errors, onErrorDetails }) {
   return (
     <div className="dashboard-page">
       <h2 className="dashboard-title">Error Tracking Dashboard</h2>
+
+      <section className="demo-section">
+        <h3>Error Chart Component</h3>
+        <ErrorChart errors={filteredErrors} groupBy="severity" />
+        <ErrorChart errors={filteredErrors} groupBy="status" />
+        <ErrorChart errors={filteredErrors} groupBy="environment" />
+      </section>
 
       <section className="demo-section">
         <h3>Search &amp; Filter Component</h3>
