@@ -1,13 +1,12 @@
 import React from 'react';
 import './ErrorDetailWindow.css';
-
 import ErrorDetail from './errorDetail'; 
 
-function ErrorDetailWindow({ error, onClose }) {
+function ErrorDetailWindow({ error, onClose, onUpdateStatus }) {
     // If 'error' is null, the modal is closed, so don't render anything
     if (!error) return null; 
 
-    // Prevent clicks inside the modal content from closing the modal (by stopping the event from reaching the backdrop)
+    // Prevent clicks inside the modal content from closing the modal
     const handleContentClick = (e) => {
         e.stopPropagation();
     };
@@ -23,9 +22,11 @@ function ErrorDetailWindow({ error, onClose }) {
                         &times;
                     </button>
                 </div>
-
                 <div className="modal-body">
-                    <ErrorDetail error={error} />
+                    <ErrorDetail 
+                        error={error} 
+                        onUpdateStatus={onUpdateStatus}
+                    />
                 </div>
             </div>
         </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import './errorCard.css';
 
-function ErrorCard({ error, onSelect, isSelected, onDetails }) {
+function ErrorCard({ error, onSelect, isSelected, onDetails, onUpdateStatus }) {
   // severity styling
   const getSeverityStyles = () => {
     switch (error.severity) {
@@ -16,8 +16,10 @@ function ErrorCard({ error, onSelect, isSelected, onDetails }) {
   // status styling
   const getStatusStyles = () => {
     switch (error.status) {
+      case 'new': return { color: '#17a2b8', text: 'New' };
       case 'open': return { color: '#dc3545', text: 'Open' };
-      case 'in-progress': return { color: '#fd7e14', text: 'In Progress' };
+      case 'in-progress': 
+      case 'in_progress': return { color: '#fd7e14', text: 'In Progress' };
       case 'resolved': return { color: '#28a745', text: 'Resolved' };
       case 'ignored': return { color: '#6c757d', text: 'Ignored' };
       default: return { color: '#6c757d', text: 'Unknown' };
@@ -43,6 +45,14 @@ function ErrorCard({ error, onSelect, isSelected, onDetails }) {
       onDetails(error);
     } else {
       console.log('Viewing details for error:', error.id);
+    }
+  };
+
+  // Handle status updates
+  const handleStatusUpdate = async (e, newStatus) => {
+    e.stopPropagation();
+    if (onUpdateStatus) {
+      await onUpdateStatus(error.id, newStatus);
     }
   };
 
@@ -112,6 +122,7 @@ function ErrorCard({ error, onSelect, isSelected, onDetails }) {
               <span className="btn-icon">📋</span> Copy
             </button>
           )}
+          
           <button
             onClick={handleViewDetails}
             className="action-btn primary"
@@ -163,7 +174,8 @@ ErrorCard.defaultProps = {
   },
   onSelect: null,
   isSelected: false,
-  onDetails: null
+  onDetails: null,
+  onUpdateStatus: null
 };
 
 export default ErrorCard;

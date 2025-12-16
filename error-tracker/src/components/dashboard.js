@@ -4,7 +4,7 @@ import SearchFilter from './searchFilter';
 import ErrorCard from './errorCard';
 import './dashBoard.css';
 
-function Dashboard({ errors, onErrorDetails }) {
+function Dashboard({ errors, onErrorDetails, onUpdateStatus }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
     severity: '',
@@ -25,16 +25,12 @@ function Dashboard({ errors, onErrorDetails }) {
       const text = (err.title + ' ' + err.message).toLowerCase();
       const matchesSearch =
         !searchTerm || text.includes(searchTerm.toLowerCase());
-
       const matchesSeverity =
         !filters.severity || err.severity === filters.severity;
-
       const matchesStatus =
         !filters.status || err.status === filters.status;
-
       const matchesEnv =
         !filters.environment || err.environment === filters.environment;
-
       return matchesSearch && matchesSeverity && matchesStatus && matchesEnv;
     });
   }, [errors, searchTerm, filters]);
@@ -42,7 +38,7 @@ function Dashboard({ errors, onErrorDetails }) {
   return (
     <div className="dashboard-page">
       <h2 className="dashboard-title">Error Tracking Dashboard</h2>
-
+      
       <section className="demo-section">
         <h3>Search &amp; Filter Component</h3>
         <SearchFilter
@@ -57,16 +53,15 @@ function Dashboard({ errors, onErrorDetails }) {
         <p className="error-count">
           Showing {filteredErrors.length} of {errors.length} errors
         </p>
-
         <div className="errors-container">
           {filteredErrors.map((error) => (
             <ErrorCard
               key={error.id}
               error={error}
               onDetails={onErrorDetails}
+              onUpdateStatus={onUpdateStatus}
             />
           ))}
-
           {filteredErrors.length === 0 && (
             <p className="empty-state">
               No errors match the current search / filters.
