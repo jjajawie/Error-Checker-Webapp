@@ -4,7 +4,7 @@ import { db, rowToError } from './db.js';
 
 const app = express();
 
-// CRA runs on 3000. API on 5000 to match the current frontend code.
+// CRA runs on 3000. API on 5000 to match the frontend code.
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 

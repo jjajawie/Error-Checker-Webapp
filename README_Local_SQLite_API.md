@@ -1,11 +1,12 @@
-# Local SQLite DB + Node API (for this repo)
+# Local SQLite DB + Node API
 
 This repo currently contains a Create-React-App frontend (`error-tracker/`).
 This adds a simple local Node/Express API (`server/`) backed by a local SQLite database file.
 
-## What you get
+## What you get ❤️
 - SQLite DB file: `server/error_tracker.db`
 - API: `http://localhost:5000`
+- DB Assets: `http://localhost:3000`
 - Endpoints:
   - `GET /api/health`
   - `GET /api/errors` (supports `q`, `status`, `severity`, `environment`, `project`)
@@ -14,14 +15,14 @@ This adds a simple local Node/Express API (`server/`) backed by a local SQLite d
   - `PATCH /api/errors/:id`
   - `DELETE /api/errors/:id`
 
-## Run the backend
+## Run the backend 🏃‍♂️
 ```bash
 cd server
 npm install
 npm run dev
 ```
 
-## Run the frontend
+## Run the frontend 🏃‍♂️
 ```bash
 cd error-tracker
 npm install

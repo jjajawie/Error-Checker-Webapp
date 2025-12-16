@@ -1,20 +1,18 @@
 import Database from "better-sqlite3";
 
-// Repo-safe + portable:
-// When you run the backend from /server, this file will be created in /server/error_tracker.db
+// When running the backend from /server, file will be created in /server/error_tracker.db
 export const db = new Database("./error_tracker.db");
 
-// Sensible defaults for local dev
+// Defaults for local dev
 try {
   db.pragma("journal_mode = WAL");
 } catch {
-  // WAL may not be supported on some environments; ignore
+  // WAL may not be supported on some environments
 }
 db.pragma("foreign_keys = ON");
 
 
-// Minimal schema that matches the current React mock fields.
-// tags are stored as JSON text (e.g. ["frontend","react"]).
+// Schema that matches the current React fields.
 db.exec(`
   CREATE TABLE IF NOT EXISTS errors (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
