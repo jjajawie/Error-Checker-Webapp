@@ -46,6 +46,15 @@ function Dashboard({ errors, onErrorDetails, onUpdateStatus }) {
         <ErrorChart errors={filteredErrors} groupBy="status" />
         <ErrorChart errors={filteredErrors} groupBy="environment" />
       </section>
+      
+      <section className="demo-section">
+        <h3>Search &amp; Filter Component</h3>
+        <SearchFilter
+          onSearch={handleSearch}
+          onFilterChange={handleFilterChange}
+          initialFilters={filters}
+        />
+      </section>
 
       <section className="demo-section">
         <h3>Error List Component</h3>
